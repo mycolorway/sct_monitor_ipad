@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface sct_monitorViewController : UIViewController
+@interface sct_monitorViewController : UIViewController <UIWebViewDelegate> {
+    IBOutlet UIWebView *webv;
+    IBOutlet UIActivityIndicatorView *loadingIndicator;
+}
 
+@property (nonatomic, strong) IBOutlet UIWebView *webv;
 @end

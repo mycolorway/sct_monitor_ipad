@@ -10,6 +10,8 @@
 
 @implementation sct_monitorViewController
 
+@synthesize webv;
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -20,12 +22,16 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    //[super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    NSURL *url = [NSURL URLWithString:@"http://demo.xuzheng.me/"];
+    [webv loadRequest:[NSURLRequest requestWithURL:url]];
 }
 
 - (void)viewDidUnload
 {
+    [self setWebv:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -54,7 +60,34 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
-    return YES;
+    return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft) || (interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+}
+
+// UIWebViewDelegate
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    // starting the load, show the activity indicator in the status bar
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    [loadingIndicator startAnimating];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    // finished loading, hide the activity indicator in the status bar
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [loadingIndicator stopAnimating];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+    // load error, hide the activity indicator in the status bar
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    
+    // report the error inside the webview
+    NSString* errorString = [NSString stringWithFormat:
+                             @"<html><body style=\"text-align:center; font-size:xx-large; color:red\">An error occurred:<br>%@</body></html>",
+                             error.localizedDescription];
+    [webv loadHTMLString:errorString baseURL:nil];
 }
 
 @end
